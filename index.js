@@ -14,7 +14,7 @@ import { format as formatOutput } from './formatter.js';
 import { hideBin } from 'yargs/helpers';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
-import { writeFile, mkdir, dirname } from 'node:fs/promises';
+import { writeFile, mkdir } from 'node:fs/promises';
 import openUrl from 'open';
 import envpaths from 'env-paths';
 import playwright from 'playwright';
@@ -147,8 +147,10 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
       try {
         let { availableRoles, roleToAssume, samlAssertion } = await credentialsManager.prepareRoleWithSAML(route.request().postDataJSON(), argv.awsRoleArn);
 
+        const rolesDir = join(os.homedir(), '.canary', "aws");
+        const rolesFile = join(rolesDir, 'roles.json');
         logger.info('Dumping roles to %s', rolesFile);
-        await mkdir(await dirname(rolesFile), { recursive: true });
+        await mkdir(rolesDir, { recursive: true });
         await writeFile(rolesFile, JSON.stringify(availableRoles, null, 2));
         if (argv.dumpRolesOnly) {
           logger.stop();
