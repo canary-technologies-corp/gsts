@@ -154,6 +154,8 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
         logger.info('Dumping roles to %s', rolesFile);
         await writeFile(rolesFile, JSON.stringify(availableRoles, null, 2));
         if (argv.dumpRolesOnly && !roleToAssume) {
+          // We still want to continue with the process
+          // so cache can be populated correctly.
           roleToAssume = availableRoles.find(role => role.roleArn.toLowerCase().includes('localdeveloper'));
           logger.info(`Dumping role only is set without a role ARN, use developer role ${roleToAssume.roleArn}`);
         }
