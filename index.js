@@ -147,8 +147,6 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
     if (route.request().url() === 'https://signin.aws.amazon.com/saml') {
       isAuthenticated = true;
 
-      console.log("ARGS", argv.awsRoleArn);
-
       try {
         let { availableRoles, roleToAssume, samlAssertion } = await credentialsManager.prepareRoleWithSAML(route.request().postDataJSON(), argv.awsRoleArn);
         console.log("prepared roles", availableRoles, roleToAssume);
@@ -157,7 +155,8 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
         logger.info('Dumping roles to %s', rolesFile);
         await writeFile(rolesFile, JSON.stringify(availableRoles, null, 2));
         if (argv.dumpRolesOnly && !roleToAssume) {
-          roleToAssume = availableRoles[0];
+          roleToAssume = availableRoles.find(role => role.roleArn.toLowerCase().includes('localdeveloper'));
+          logger.info(`Dumping role only is set without a role ARN, use developer role ${roleToAssume.roleArn}`);
         }
 
         if (!roleToAssume && availableRoles.length > 1) {
