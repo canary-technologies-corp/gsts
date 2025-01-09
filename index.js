@@ -149,7 +149,6 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
 
       try {
         let { availableRoles, roleToAssume, samlAssertion } = await credentialsManager.prepareRoleWithSAML(route.request().postDataJSON(), argv.awsRoleArn);
-        console.log("prepared roles", availableRoles, roleToAssume);
 
         const rolesFile = join(argv.cacheDir, 'roles.json');
         logger.info('Dumping roles to %s', rolesFile);
