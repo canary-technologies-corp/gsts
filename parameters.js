@@ -91,6 +91,12 @@ export function generateCliParameters(paths) {
       awsConfigKey: 'gsts.verbose',
       type: 'count',
       alias: 'v'
+    },
+    'dump-roles-only': {
+      description: 'Dump roles only',
+      type: 'boolean',
+      required: false,
+      default: false,
     }
   };
 }

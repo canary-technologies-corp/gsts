@@ -13,7 +13,9 @@ import { fileURLToPath, parse as urlparse } from 'node:url';
 import { format as formatOutput } from './formatter.js';
 import { hideBin } from 'yargs/helpers';
 import { join } from 'node:path';
+import os from 'node:os';
 import { spawn } from 'node:child_process';
+import { writeFile, mkdir } from 'node:fs/promises';
 import openUrl from 'open';
 import envpaths from 'env-paths';
 import playwright from 'playwright';
@@ -85,6 +87,8 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
  */
 
 (async () => {
+  await mkdir(argv.cacheDir, { recursive: true });
+
   if (argv._[0] === 'console') {
     logger.debug('Opening url %s', SAML_URL);
 
@@ -145,6 +149,16 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
 
       try {
         let { availableRoles, roleToAssume, samlAssertion } = await credentialsManager.prepareRoleWithSAML(route.request().postDataJSON(), argv.awsRoleArn);
+
+        const rolesFile = join(argv.cacheDir, 'roles.json');
+        logger.info('Dumping roles to %s', rolesFile);
+        await writeFile(rolesFile, JSON.stringify(availableRoles, null, 2));
+        if (argv.dumpRolesOnly && !roleToAssume) {
+          // We still want to continue with the process
+          // so cache can be populated correctly.
+          roleToAssume = availableRoles.find(role => role.roleArn.toLowerCase().includes('localdeveloper'));
+          logger.info(`Dumping role only is set without a role ARN, use developer role ${roleToAssume.roleArn}`);
+        }
 
         if (!roleToAssume && availableRoles.length > 1) {
           logger.stop();
