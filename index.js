@@ -14,7 +14,7 @@ import { format as formatOutput } from './formatter.js';
 import { hideBin } from 'yargs/helpers';
 import { join } from 'node:path';
 import { spawn } from 'node:child_process';
-import { openApp } from 'open';
+import openUrl from 'open';
 import envpaths from 'env-paths';
 import playwright from 'playwright';
 import prompts from 'prompts';
@@ -88,7 +88,7 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
   if (argv._[0] === 'console') {
     logger.debug('Opening url %s', SAML_URL);
 
-    return await openApp(SAML_URL);
+    return await openUrl(SAML_URL);
   }
 
   if (argv.clean) {
@@ -238,7 +238,7 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
     // Requests tagged with this specific error were made by gsts and should result
     // in a program termination.
     if (request.failure().errorText === 'net::ERR_BLOCKED_BY_CLIENT') {
-      logger.debug(`Request to "${request.url()}" has has been successfully blocked`);
+      logger.debug(`Request to "${request.url()}" has been successfully blocked`);
       await context.close();
       logger.debug(`Closed context of "${request.url()}"`);
       return;
