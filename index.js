@@ -13,6 +13,7 @@ import { fileURLToPath, parse as urlparse } from 'node:url';
 import { format as formatOutput } from './formatter.js';
 import { hideBin } from 'yargs/helpers';
 import { join } from 'node:path';
+import os from 'node:os';
 import { spawn } from 'node:child_process';
 import { writeFile, mkdir } from 'node:fs/promises';
 import openUrl from 'open';
