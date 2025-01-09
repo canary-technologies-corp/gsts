@@ -87,6 +87,8 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
  */
 
 (async () => {
+  await mkdir(argv.cacheDir, { recursive: true });
+
   if (argv._[0] === 'console') {
     logger.debug('Opening url %s', SAML_URL);
 
@@ -148,10 +150,8 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
       try {
         let { availableRoles, roleToAssume, samlAssertion } = await credentialsManager.prepareRoleWithSAML(route.request().postDataJSON(), argv.awsRoleArn);
 
-        const rolesDir = join(os.homedir(), '.canary', "aws");
-        const rolesFile = join(rolesDir, 'roles.json');
+        const rolesFile = join(argv.cacheDir, 'roles.json');
         logger.info('Dumping roles to %s', rolesFile);
-        await mkdir(rolesDir, { recursive: true });
         await writeFile(rolesFile, JSON.stringify(availableRoles, null, 2));
         if (argv.dumpRolesOnly) {
           logger.stop();
