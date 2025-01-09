@@ -149,6 +149,8 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
 
       try {
         let { availableRoles, roleToAssume, samlAssertion } = await credentialsManager.prepareRoleWithSAML(route.request().postDataJSON(), argv.awsRoleArn);
+        console.log('availableRoles', availableRoles);
+        console.log('roleToAssume', roleToAssume);
 
         const rolesFile = join(argv.cacheDir, 'roles.json');
         logger.info('Dumping roles to %s', rolesFile);
@@ -157,7 +159,7 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
           // We still want to continue with the process
           // so cache can be populated correctly.
           roleToAssume = availableRoles.find(role => role.roleArn.toLowerCase().includes('localdeveloper'));
-          logger.info(`Dumping role only is set without a role ARN, use developer role ${roleToAssume.roleArn}`);
+          logger.info(`Dumping role only is set without a role ARN, use developer role ${roleToAssume}`);
         }
 
         if (!roleToAssume && availableRoles.length > 1) {
