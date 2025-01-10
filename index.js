@@ -88,8 +88,10 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
 
 (async () => {
   await mkdir(argv.cacheDir, { recursive: true });
-  logger.info('# cacheDir', argv.cacheDir);
-  logger.info("# Browser data dir", paths.data);
+  logger.info(`
+# GSTS DIRECTORY #  
+    cacheDir: ${argv.cacheDir}
+    Browser data dir: ${paths.data}`);
 
   if (argv._[0] === 'console') {
     logger.debug('Opening url %s', SAML_URL);
