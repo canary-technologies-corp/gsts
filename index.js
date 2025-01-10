@@ -88,6 +88,8 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
 
 (async () => {
   await mkdir(argv.cacheDir, { recursive: true });
+  logger.info('# cacheDir', argv.cacheDir);
+  logger.info("# Browser data dir", paths.data);
 
   if (argv._[0] === 'console') {
     logger.debug('Opening url %s', SAML_URL);
@@ -158,7 +160,7 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
           // We still want to continue with the process
           // so cache can be populated correctly.
           roleToAssume = availableRoles.find(role => role.roleArn.toLowerCase().includes('localdeveloper'));
-          // temporarily override AWS_PROFILE also otherwise it will be mispatched with roleToAssume.name
+          // temporarily override AWS_PROFILE also otherwise it will be mismatched with roleToAssume.name
           process.env.AWS_PROFILE = roleToAssume.name;
           logger.info(`Dumping role only is set without a role ARN, use developer role ${roleToAssume}`);
         }
