@@ -63,6 +63,10 @@ export class Logger {
     }
 
     debug(...args) {
+      if (!process.env.CANARY_DEBUG) {
+        return;
+      }
+
       // For security reasons, do not log debug messages which can contain credentials secrets
       // when in non-interactive mode, since other third-party tools could capture this content
       // as part of their error processing logic.
