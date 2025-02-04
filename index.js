@@ -15,6 +15,8 @@ import { hideBin } from 'yargs/helpers';
 import { join } from 'node:path';
 import os from 'node:os';
 import { spawn } from 'node:child_process';
+import { promisify } from "node:util";
+import child_process from "node:child_process";
 import { writeFile, mkdir } from 'node:fs/promises';
 import openUrl from 'open';
 import envpaths from 'env-paths';
@@ -24,6 +26,7 @@ import trash from 'trash';
 import yargs from 'yargs';
 
 const paths = envpaths('gsts', { suffix: '' });
+const exec = promisify(child_process.exec);
 
 /**
  * Always return control to the terminal in case an unhandled rejection occurs.
@@ -130,6 +133,14 @@ const credentialsManager = new CredentialsManager(logger, argv.awsRegion, argv['
         throw e;
       }
     }
+  }
+
+  try {
+    const { stdout, stderr } = await exec(`pnpx playwright install ${argv.playwrightEngine ?? "firefox"}`);
+    logger.debug(stdout);
+    logger.debug(stderr);
+  } catch (e) {
+    logger.warn("gsts.auto_install_browser_error: Try running `canary aws local-access-setup`", e);
   }
 
   const playwrightOptions = {
